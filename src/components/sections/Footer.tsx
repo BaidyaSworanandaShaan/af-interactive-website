@@ -31,7 +31,7 @@ export default function Footer() {
             <div className="col-span-2 md:col-span-1">
               <a href="#" className="flex items-center gap-2.5 mb-4">
                 <img
-                  src="/logos/af-secondary-logo.svg"
+                  src={`${import.meta.env.BASE_URL}logos/af-secondary-logo.svg`}
                   alt="AuroraForge Logo"
                   className="h-6 w-auto"
                 />

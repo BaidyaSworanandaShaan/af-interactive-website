@@ -31,8 +31,8 @@ export default function Navbar() {
             <img
               src={
                 theme === "dark"
-                  ? "/logos/af-secondary-logo.svg"
-                  : "/logos/af-primary-logo.svg"
+                  ? `${import.meta.env.BASE_URL}logos/af-secondary-logo.svg`
+                  : `${import.meta.env.BASE_URL}logos/af-primary-logo.svg`
               }
               alt="AuroraForge Logo"
               className="h-5 w-auto"

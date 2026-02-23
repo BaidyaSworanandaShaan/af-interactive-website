@@ -40,7 +40,7 @@ export default function Ecosystem() {
                 className="flex items-center justify-center h-24 w-auto"
               >
                 <img
-                  src="/logos/openmetal.svg"
+                  src={`${import.meta.env.BASE_URL}logos/openmetal.svg`}
                   alt="OpenMetal"
                   className="h-12 object-contain"
                 />
