@@ -60,14 +60,14 @@ const teamMembers: TeamMember[] = [
   {
     name: "Giri Raj BC",
     role: "Devops and Cloud Solution ",
-    image: "",
+    image: "/team/girirajbc.jpg",
     linkedin: "https://www.linkedin.com/in/giri-raj-bc-82a7371b6/",
     gradient: "from-teal-500 via-brand-500 to-violet-500",
   },
   {
     name: "Saugat Subba",
     role: "Graphic Designer | Social Media Manager",
-    image: "/team/saugat.jpg",
+    image: "",
     linkedin: "https://www.linkedin.com/in/saugat-subba-34939b32a/",
     gradient: "from-teal-500 via-brand-500 to-violet-500",
   },
