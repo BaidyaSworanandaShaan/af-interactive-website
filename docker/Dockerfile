@@ -3,7 +3,7 @@ FROM node:20.10.0
 
 WORKDIR /app
 
-COPY package*.json .npmrc ./
+COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
