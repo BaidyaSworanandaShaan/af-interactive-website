@@ -1,21 +1,22 @@
-import express from "express";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+// Fix for __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from the dist folder
-app.use(express.static(join(__dirname, "dist")));
+// 1. Serve the static files from the 'dist' directory
+app.use(express.static(path.join(__dirname, 'dist')));
 
-// Fallback: send index.html for any unmatched route (SPA support)
-app.get("/*splat", (_req, res) => {
-  res.sendFile(join(__dirname, "dist", "index.html"));
+// 2. Handle SPA routing for Express 5.x using path-to-regexp v8 syntax
+app.get('/{*splat}', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
