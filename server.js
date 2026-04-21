@@ -1,19 +1,14 @@
-import express from "express";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const express = require('express');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from the dist folder
-app.use(express.static(join(__dirname, "dist")));
+// 1. Serve the static files from the 'dist' directory
+app.use(express.static(path.join(__dirname, 'dist')));
 
-// Fallback: send index.html for any unmatched route (SPA support)
-app.get("/*splat", (_req, res) => {
-  res.sendFile(join(__dirname, "dist", "index.html"));
+// 2. Handle SPA routing: send index.html for any request that doesn't match a file
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 app.listen(PORT, () => {
