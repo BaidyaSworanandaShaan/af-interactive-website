@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Linkedin } from "lucide-react";
 import { Container, Reveal, SectionHeading } from "../ui";
 
@@ -17,24 +16,24 @@ interface TeamMember {
 const teamMembers: TeamMember[] = [
   {
     name: "Kusum Adhikari",
-    role: "Director of Engineering | Co-founder",
+    role: "Co-founder | CEO",
     image: `${import.meta.env.BASE_URL}team/kusum.jpg`,
     linkedin: "https://www.linkedin.com/in/kusum-adhikari-96171b23/",
     gradient: "from-brand-500 via-indigo-500 to-purple-600",
   },
-  {
-    name: "Pratik Gautam",
-    role: "Business Development Head | Co-founder",
-    image: `${import.meta.env.BASE_URL}team/pratik.png`,
-    linkedin: "https://www.linkedin.com/in/pratik-gautam-599476154/",
-    gradient: "from-violet-500 via-brand-500 to-indigo-600",
-  },
+
   {
     name: "Asutosh Adhikari",
     role: "Software Engineer",
     image: `${import.meta.env.BASE_URL}team/asutosh.jpg`,
     linkedin: "https://www.linkedin.com/in/asutoshadhikari/",
     gradient: "from-indigo-500 via-purple-500 to-pink-500",
+  },  {
+    name: "Shaan Sworananda Baidya",
+    role: "Software Engineer",
+    image: `${import.meta.env.BASE_URL}team/shaan.jpg`,
+    linkedin: "https://www.linkedin.com/in/shaan-sworananda-baidya-045988322/",
+    gradient: "from-purple-600 via-pink-500 to-rose-500",
   },
   {
     name: "Roshan Chapagain",
@@ -44,40 +43,23 @@ const teamMembers: TeamMember[] = [
     gradient: "from-brand-600 via-teal-500 to-cyan-500",
   },
   {
-    name: "Shaan Sworananda Baidya",
-    role: "UI / UX Developer",
-    image: `${import.meta.env.BASE_URL}team/shaan.jpg`,
-    linkedin: "https://www.linkedin.com/in/shaan-sworananda-baidya-045988322/",
-    gradient: "from-purple-600 via-pink-500 to-rose-500",
-  },
-  {
-    name: "Sunil Shrestha",
-    role: "QA",
-    image: `${import.meta.env.BASE_URL}team/sunil.jpg`,
-    linkedin: "https://www.linkedin.com/in/sunil-shrestha-682594134/",
-    gradient: "from-teal-500 via-brand-500 to-violet-500",
-  },
-  {
-    name: "Giri Raj BC",
-    role: "Devops and Cloud Solution ",
-    image: `${import.meta.env.BASE_URL}team/girirajbc.jpg`,
-    linkedin: "https://www.linkedin.com/in/giri-raj-bc-82a7371b6/",
-    gradient: "from-teal-500 via-brand-500 to-violet-500",
-  },
-  {
-    name: "Saugat Subba",
-    role: "Graphic Designer | Social Media Manager",
-    image: "",
-    linkedin: "https://www.linkedin.com/in/saugat-subba-34939b32a/",
-    gradient: "from-teal-500 via-brand-500 to-violet-500",
-  },
+    name: "Progress Maharjan",
+    role: "Software Engineer",
+    image: `${import.meta.env.BASE_URL}team/progress.jpg`,
+    linkedin: "https://linkedin.com",
+    gradient: "from-brand-600 via-teal-500 to-cyan-500",
+  }
+
+
+ 
+ 
 ];
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
 function TeamCard({ member }: { member: TeamMember }) {
   return (
-    <div className="group relative mx-3 flex-shrink-0 w-48 md:w-52 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:-translate-y-1 hover:border-brand-200 dark:hover:border-brand-800 transition-all duration-300">
+    <div className="group relative w-full rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 hover:-translate-y-1 hover:border-brand-200 dark:hover:border-brand-800 transition-all duration-300">
       {/* ── Square image / placeholder ── */}
       <div className="relative aspect-square overflow-hidden">
         {member.image ? (
@@ -143,11 +125,6 @@ function TeamCard({ member }: { member: TeamMember }) {
 // ─── Section ──────────────────────────────────────────────────────────────────
 
 export default function OurTeamSection() {
-  const [paused, setPaused] = useState(false);
-
-  // Duplicate for seamless infinite loop
-  const track = [...teamMembers, ...teamMembers];
-
   return (
     <section id="team" className="py-24 lg:py-32 overflow-hidden scroll-mt-20">
       <Container>
@@ -159,27 +136,10 @@ export default function OurTeamSection() {
           />
         </Reveal>
 
-        {/* Marquee — contained within layout margins */}
-        <div
-          className="relative mt-12 overflow-hidden"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
-          {/* Scrolling track */}
-          <div className="overflow-hidden">
-            <div
-              className="flex items-stretch py-2"
-              style={{
-                animation: "marquee 40s linear infinite",
-                animationPlayState: paused ? "paused" : "running",
-                width: "max-content",
-              }}
-            >
-              {track.map((member, i) => (
-                <TeamCard key={`${member.name}-${i}`} member={member} />
-              ))}
-            </div>
-          </div>
+        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+          {teamMembers.map((member) => (
+            <TeamCard key={member.name} member={member} />
+          ))}
         </div>
       </Container>
     </section>
