@@ -80,9 +80,17 @@ jobs:
               --name ${{ env.CONTAINER_NAME }} \
               --restart unless-stopped \
               --env-file ${{ env.ENV_PATH }} \
-              -p 80:3000 \
+              -p ${{ env.HOST_PORT }}:3000 \
               ${{ env.IMAGE_NAME }}
 
-            # 5. Cleanup
+            # 5. Verify container is still running after boot
+            sleep 5
+            if ! docker ps --filter "name=^/${{ env.CONTAINER_NAME }}$" --filter "status=running" --format '{{.Names}}' | grep -q "^${{ env.CONTAINER_NAME }}$"; then
+              echo "Deployment failed: container is not running. Recent logs:"
+              docker logs ${{ env.CONTAINER_NAME }} || true
+              exit 1
+            fi
+
+            # 6. Cleanup
             rm /tmp/${{ env.TAR_NAME }}
             docker image prune -f
