@@ -1,50 +1,88 @@
-name: Deploy to GitHub Pages
+name: Deploy Aurora Site (Develop)
 
 on:
   push:
     branches:
-      - main
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: true
+      - develop
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    
+    # Define variables here since we only have one branch now
+    env:
+      IMAGE_NAME: aurora-site:develop
+      CONTAINER_NAME: aurora-site-dev
+      HOST_PORT: 3035
+      TAR_NAME: aurora-site-dev.tar.gz
+      ENV_PATH: /opt/aurora-site/.env
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          ref: develop
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Build .env file
+        env:
+          ENV_CONTENT: ${{ secrets.FRONTEND_DOTENV || secrets.ENV || vars.FRONTEND_DOTENV }}
+        run: |
+          if [ -z "$ENV_CONTENT" ]; then
+            echo "Error: No environment variables found in secrets or vars."
+            exit 1
+          fi
+          
+          # Create .env for the Docker Container (runtime)
+          printf "%s" "$ENV_CONTENT" > .env.deploy
+          
+          # Create .env.production for Vite (build time)
+          printf "%s\n" "$ENV_CONTENT" | grep -E '^[[:space:]]*VITE_[A-Za-z0-9_]+=' > .env.production || true
 
-      - name: Build
-        run: npm run build
+      - name: Build Docker image
+        run: docker build -f docker/Dockerfile -t ${{ env.IMAGE_NAME }} .
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Save image to tar
+        run: docker save ${{ env.IMAGE_NAME }} | gzip > ${{ env.TAR_NAME }}
+
+      - name: Copy image and env to server
+        uses: appleboy/scp-action@v0.1.7
         with:
-          path: dist
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          source: "${{ env.TAR_NAME }},.env.deploy"
+          target: "/tmp/"
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Load and run on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_PORT }}
+          script_stop: true
+          script: |
+            # 1. Load the new image
+            docker load < /tmp/${{ env.TAR_NAME }}
+
+            # 2. Move .env to the protected directory
+            mv /tmp/.env.deploy ${{ env.ENV_PATH }}
+            chmod 600 ${{ env.ENV_PATH }}
+
+            # 3. Stop and remove old container
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
+
+            # 4. Run new container
+            docker run -d \
+              --name ${{ env.CONTAINER_NAME }} \
+              --restart unless-stopped \
+              --env-file ${{ env.ENV_PATH }} \
+              -p ${{ env.HOST_PORT }}:3000 \
+              ${{ env.IMAGE_NAME }}
+
+            # 5. Cleanup
+            rm /tmp/${{ env.TAR_NAME }}
+            docker image prune -f
