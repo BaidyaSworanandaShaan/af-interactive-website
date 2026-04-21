@@ -14,6 +14,10 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // 2. Handle SPA routing for Express 5.x using path-to-regexp v8 syntax
 app.get('/{*splat}', (req, res) => {
+  // Do not serve index.html for missing static files like .js/.css/.png.
+  if (path.extname(req.path)) {
+    return res.status(404).end();
+  }
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
