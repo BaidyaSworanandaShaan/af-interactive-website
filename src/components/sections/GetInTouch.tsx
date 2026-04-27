@@ -25,7 +25,7 @@ const contactItems = [
     label: "Location",
     title: "Kathmandu, Nepal",
     subtitle: "Find us in the heart of Nepal",
-    body: "Aurora Forge Co.",
+    body: "Aurora Forge ",
     href: null,
     external: false,
   },

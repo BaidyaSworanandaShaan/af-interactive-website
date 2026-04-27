@@ -43,7 +43,7 @@ export default function CEOMessage() {
               </motion.div>
 
               <blockquote className="font-semibold text-lg md:text-xl text-gray-800 dark:text-gray-100 leading-relaxed">
-                When I founded Aurora Forge Co., my vision was
+                When I founded Aurora Forge , my vision was
                 clear — to create technology from Nepal that can stand
                 confidently on the global stage. We design and build digital
                 products, from travel technology to content platforms, that are
@@ -51,7 +51,7 @@ export default function CEOMessage() {
               </blockquote>
 
               <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                — Founding vision, Aurora Forge Co.
+                — Founding vision, Aurora Forge 
               </p>
             </div>
           </div>
