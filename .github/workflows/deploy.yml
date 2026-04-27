@@ -64,6 +64,9 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script_stop: true
           script: |
+            # 0. Remove old image to free space before loading new one
+            docker rmi ${{ env.IMAGE_NAME }} || true
+
             # 1. Load the new image
             docker load < /tmp/${{ env.TAR_NAME }}
 
