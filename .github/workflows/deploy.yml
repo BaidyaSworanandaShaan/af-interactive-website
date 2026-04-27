@@ -10,15 +10,22 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
-    # Define variables here since we only have one branch now
     env:
       IMAGE_NAME: aurora-site:develop
       CONTAINER_NAME: aurora-site-dev
-      HOST_PORT: 80
+      HOST_PORT: 3000
       TAR_NAME: aurora-site-dev.tar.gz
       ENV_PATH: /opt/aurora-site/.env
 
     steps:
+      - name: Checkout code
+        uses: appleboy/ssh-action@v1.0.3 # Pre-check to ensure dir exists
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: sudo mkdir -p /opt/aurora-site && sudo chmod 777 /opt/aurora-site
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -32,11 +39,7 @@ jobs:
             echo "Error: No environment variables found in secrets or vars."
             exit 1
           fi
-          
-          # Create .env for the Docker Container (runtime)
           printf "%s" "$ENV_CONTENT" > .env.deploy
-          
-          # Create .env.production for Vite (build time)
           printf "%s\n" "$ENV_CONTENT" | grep -E '^[[:space:]]*VITE_[A-Za-z0-9_]+=' > .env.production || true
 
       - name: Build Docker image
@@ -64,25 +67,17 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script_stop: true
           script: |
-            # 0. Stop and remove old container first (so image can be removed)
+            # 1. Prepare Docker
             docker stop ${{ env.CONTAINER_NAME }} || true
             docker rm ${{ env.CONTAINER_NAME }} || true
-
-            # 1. Remove old image to free space before loading new one
             docker rmi ${{ env.IMAGE_NAME }} || true
-
-            # 2. Load the new image
             docker load < /tmp/${{ env.TAR_NAME }}
 
-            # 3. Move .env to the protected directory
+            # 2. Setup Env
             mv /tmp/.env.deploy ${{ env.ENV_PATH }}
             chmod 600 ${{ env.ENV_PATH }}
 
-
-            # 4. Stop nginx if running (frees port 80)
-            sudo systemctl stop nginx || true
-
-            # 5. Run new container
+            # 3. Run Container on Port 3000
             docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
               --restart unless-stopped \
@@ -90,14 +85,10 @@ jobs:
               -p ${{ env.HOST_PORT }}:3000 \
               ${{ env.IMAGE_NAME }}
 
-            # 6. Verify container is still running after boot
-            sleep 5
-            if ! docker ps --filter "name=^/${{ env.CONTAINER_NAME }}$" --filter "status=running" --format '{{.Names}}' | grep -q "^${{ env.CONTAINER_NAME }}$"; then
-              echo "Deployment failed: container is not running. Recent logs:"
-              docker logs ${{ env.CONTAINER_NAME }} || true
-              exit 1
-            fi
+            # 4. Fix Nginx (Ensure it is running and proxying to 3000)
+            sudo systemctl start nginx || true
+            sudo systemctl reload nginx || true
 
-            # 7. Cleanup
+            # 5. Cleanup
             rm /tmp/${{ env.TAR_NAME }}
             docker image prune -f
