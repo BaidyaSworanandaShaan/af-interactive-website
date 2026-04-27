@@ -78,7 +78,10 @@ jobs:
             docker stop ${{ env.CONTAINER_NAME }} || true
             docker rm ${{ env.CONTAINER_NAME }} || true
 
-            # 4. Run new container
+            # 4. Stop nginx if running (frees port 80)
+            sudo systemctl stop nginx || true
+
+            # 5. Run new container
             docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
               --restart unless-stopped \
@@ -86,7 +89,7 @@ jobs:
               -p ${{ env.HOST_PORT }}:3000 \
               ${{ env.IMAGE_NAME }}
 
-            # 5. Verify container is still running after boot
+            # 6. Verify container is still running after boot
             sleep 5
             if ! docker ps --filter "name=^/${{ env.CONTAINER_NAME }}$" --filter "status=running" --format '{{.Names}}' | grep -q "^${{ env.CONTAINER_NAME }}$"; then
               echo "Deployment failed: container is not running. Recent logs:"
@@ -94,6 +97,6 @@ jobs:
               exit 1
             fi
 
-            # 6. Cleanup
+            # 7. Cleanup
             rm /tmp/${{ env.TAR_NAME }}
             docker image prune -f
