@@ -67,9 +67,9 @@ export default function Footer() {
               <a
                 href="#"
                 className="text-sm font-semibold text-gray-200 hover:text-brand-400 transition-colors"
-                aria-label="Aurora Forge Co."
+                aria-label="Aurora Forge "
               >
-                Aurora Forge Co.
+                Aurora Forge LLC
               </a>
               <p className="text-xs text-gray-500 mt-1 mb-5">
                 1024 Dotson <br />  <span className="mt-2 block">Apex,NC, 27523</span> 
@@ -96,7 +96,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-xs">
           <p>
-            &copy; {new Date().getFullYear()} Aurora Forge Co.. All
+            &copy; {new Date().getFullYear()} Aurora Forge . All
             rights reserved.
           </p>
           <div className="flex items-center gap-6">
