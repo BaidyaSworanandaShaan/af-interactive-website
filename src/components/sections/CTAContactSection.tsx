@@ -28,7 +28,7 @@ const contactItems = [
     icon: MapPin,
     label: "Location",
     title: "Kathmandu, Nepal",
-    subtitle: "Aurora Forge Interactive Pvt. Ltd.",
+    subtitle: "Aurora Forge Co.",
     href: null,
   },
 ] as const;

@@ -52,7 +52,7 @@ export default function Ecosystem() {
           <Reveal>
             <div className="mb-12 p-6 md:p-8 rounded-2xl bg-white dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800">
               <p className="text-base md:text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-4">
-                Aurora Forge Interactive is an official sales partner of{" "}
+                Aurora Forge Co. is an official sales partner of{" "}
                 <a
                   href="https://openmetal.io/"
                   target="_blank"
